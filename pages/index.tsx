@@ -1,60 +1,80 @@
-import React from "react";
-import type { GetServerSideProps } from "next";
-import Layout from "../components/Layout";
-import Post, { PostProps } from "../components/Post";
-import prisma from "../lib/prisma";
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const feed = await prisma.post.findMany({
-    where: {
-      published: true,
-    },
-    include: {
-      author: {
-        select: {
-          name: true,
-        },
-      },
-    },
-  });
-  return {
-    props: { feed },
-  };
-};
+import React, { useState } from 'react'
+import Layout from '../components/Layout'
+import useSWR from 'swr'
+import { useSession } from 'next-auth/react'
 
 type Props = {
-  feed: PostProps[];
-};
+  // feed: PostProps[];
+}
 
-const Blog: React.FC<Props> = (props) => {
+export const fetcher = (url: string, ...args: any) => fetch(url, ...args).then((res) => res.json())
+
+const MainPage: React.FC<Props> = (props) => {
+  const [tnved, setTnved] = useState('')
+  const [year, setYear] = useState('2021')
+  const { data: session } = useSession()
+
+  const { data, error, isLoading } = useSWR(`/api/results?year=${year}&tnved=${tnved}`, fetcher)
+
+  if (!session) {
+    return (
+      <Layout>
+        <div>Вам необходимо войти в систему.</div>
+      </Layout>
+    )
+  }
+
   return (
     <Layout>
       <div className="page">
-        <h1>Public Feed</h1>
-        <main>
-          {props.feed.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
+        <main className="container mx-auto mb-10">
+          <h1 className="text-2xl font-bold mb-8">Рейтинг ТНВЭД для замещения:</h1>
+          <div className="pb-8 flex gap-4">
+            <input
+              value={tnved}
+              className="py-2 px-4 border rounded"
+              placeholder="Введите ТН ВЭД"
+              onChange={(e) => {
+                setTnved(e.target.value)
+              }}
+            />
+            <select
+              value={year}
+              onChange={(e) => {
+                setYear(e.target.value)
+              }}
+              className="py-2 px-4 bg-white w-60 border rounded"
+            >
+              <option>2019</option>
+              <option>2020</option>
+              <option>2021</option>
+              <option>2022</option>
+            </select>
+          </div>
+          <div className="flex gap-4 flex-col">
+            <div className="shadow bg-white rounded p-4 flex gap-8 flex-nowrap font-bold text-gray-600">
+              <div className="basis-1/12">ТН ВЭД</div>
+              <div className="basis-6/12">Название</div>
+              <div className="basis-2/12">Импорт, $</div>
+              <div className="basis-2/12">Экспорт, $</div>
+              <div className="basis-1/12">Рейтинг</div>
             </div>
-          ))}
+            {data &&
+              data.map((tnved) => (
+                <div key={tnved?.tnved} className="shadow bg-white rounded p-4 flex gap-8 flex-nowrap">
+                  <div className="basis-1/12">{tnved?.tnved}</div>
+                  <div className="basis-6/12">{tnved?.tnved_title}</div>
+                  <div className="basis-2/12">{tnved?.import_amount_usd || 0}</div>
+                  <div className="basis-2/12">{tnved?.export_amount_usd || 0}</div>
+                  <div className="basis-1/12">{tnved?.score}</div>
+                </div>
+              ))}
+          </div>
+          {error && 'Ошибка БД'}
         </main>
       </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
     </Layout>
-  );
-};
+  )
+}
 
-export default Blog;
+export default MainPage

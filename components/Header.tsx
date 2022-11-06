@@ -13,8 +13,8 @@ const Header: React.FC = () => {
   let left = (
     <div className="left">
       <Link href="/">
-        <a className="bold" data-active={isActive("/")}>
-          Feed
+        <a className="bold text-xl" data-active={isActive("/")}>
+          Инвестиционные ниши
         </a>
       </Link>
       <style jsx>{`
@@ -45,8 +45,8 @@ const Header: React.FC = () => {
     left = (
       <div className="left">
         <Link href="/">
-          <a className="bold" data-active={isActive("/")}>
-            Feed
+          <a className="bold text-xl" data-active={isActive("/")}>
+            Инвестиционные ниши
           </a>
         </Link>
         <style jsx>{`
@@ -86,7 +86,7 @@ const Header: React.FC = () => {
     right = (
       <div className="right">
         <Link href="/api/auth/signin">
-          <a data-active={isActive("/signup")}>Log in</a>
+          <a data-active={isActive("/signup")}>Вход</a>
         </Link>
         <style jsx>{`
           a {
@@ -117,12 +117,9 @@ const Header: React.FC = () => {
     left = (
       <div className="left">
         <Link href="/">
-          <a className="bold" data-active={isActive("/")}>
-            Feed
+          <a className="bold text-xl" data-active={isActive("/")}>
+            Инвестиционные ниши
           </a>
-        </Link>
-        <Link href="/drafts">
-          <a data-active={isActive("/drafts")}>My drafts</a>
         </Link>
         <style jsx>{`
           .bold {
@@ -150,13 +147,8 @@ const Header: React.FC = () => {
         <p>
           {session.user.name} ({session.user.email})
         </p>
-        <Link href="/create">
-          <button>
-            <a>New post</a>
-          </button>
-        </Link>
         <button onClick={() => signOut()}>
-          <a>Log out</a>
+          <a>Выход</a>
         </button>
         <style jsx>{`
           a {
@@ -194,16 +186,9 @@ const Header: React.FC = () => {
   }
 
   return (
-    <nav>
+    <nav className="shadow mb-8 bg-white flex gap-4 p-4 px-8 items-center">
       {left}
       {right}
-      <style jsx>{`
-        nav {
-          display: flex;
-          padding: 2rem;
-          align-items: center;
-        }
-      `}</style>
     </nav>
   );
 };
