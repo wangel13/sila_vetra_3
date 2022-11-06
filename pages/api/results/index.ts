@@ -14,7 +14,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       // @ts-ignore
       where: {
         year: Number(year),
-        ...(tnved && { tnved }),
+        ...(tnved && { tnved: { startsWith: tnved } }),
       },
       orderBy: {
         score: 'desc',
