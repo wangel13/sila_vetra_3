@@ -4,10 +4,14 @@ import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 
 type Props = {
-  // feed: PostProps[];
 }
 
 export const fetcher = (url: string, ...args: any) => fetch(url, ...args).then((res) => res.json())
+
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
 const MainPage: React.FC<Props> = (props) => {
   const [tnved, setTnved] = useState('')
@@ -19,7 +23,11 @@ const MainPage: React.FC<Props> = (props) => {
   if (!session) {
     return (
       <Layout>
-        <div>Вам необходимо войти в систему.</div>
+        <main className="container mx-auto mb-10">
+          <div className="shadow bg-white rounded p-4 flex gap-8 flex-nowrap font-bold text-gray-600">
+            Вам необходимо войти в систему.
+          </div>
+        </main>
       </Layout>
     )
   }
@@ -55,8 +63,8 @@ const MainPage: React.FC<Props> = (props) => {
             <div className="shadow bg-white rounded p-4 flex gap-8 flex-nowrap font-bold text-gray-600">
               <div className="basis-1/12">ТН ВЭД</div>
               <div className="basis-6/12">Название</div>
-              <div className="basis-2/12">Импорт, $</div>
-              <div className="basis-2/12">Экспорт, $</div>
+              <div className="basis-2/12">Импорт</div>
+              <div className="basis-2/12">Экспорт</div>
               <div className="basis-1/12">Рейтинг</div>
             </div>
             {data &&
@@ -64,8 +72,8 @@ const MainPage: React.FC<Props> = (props) => {
                 <div key={tnved?.tnved} className="shadow bg-white rounded p-4 flex gap-8 flex-nowrap">
                   <div className="basis-1/12">{tnved?.tnved}</div>
                   <div className="basis-6/12">{tnved?.tnved_title}</div>
-                  <div className="basis-2/12">{tnved?.import_amount_usd || 0}</div>
-                  <div className="basis-2/12">{tnved?.export_amount_usd || 0}</div>
+                  <div className="basis-2/12">{tnved?.import_amount_usd ? formatter.format(tnved?.import_amount_usd) : 0}</div>
+                  <div className="basis-2/12">{tnved?.export_amount_usd ? formatter.format(tnved?.export_amount_usd) : 0}</div>
                   <div className="basis-1/12">{tnved?.score}</div>
                 </div>
               ))}
