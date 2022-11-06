@@ -4,12 +4,12 @@ import { getSession } from 'next-auth/react'
 
 // GET /api/adjustment_scores
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-  const { year, tnved } = req.query
+  const { year, tnved, size } = req.query
 
   const session = await getSession({ req })
   if (session) {
     const result = await prisma.final_rating.findMany({
-      take: 200,
+      take: Number(size),
       // skip: 1, // Skip the cursor
       // @ts-ignore
       where: {

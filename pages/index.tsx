@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Layout from '../components/Layout'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
+import { CSVLink } from 'react-csv'
 
 type Props = {}
 
@@ -15,16 +16,18 @@ const formatter = new Intl.NumberFormat('en-US', {
 const MainPage: React.FC<Props> = (props) => {
   const [tnved, setTnved] = useState('')
   const [year, setYear] = useState('2021')
+  const [size, setSize] = useState('200')
   const { data: session } = useSession()
 
-  const { data, error, isLoading } = useSWR(`/api/results?year=${year}&tnved=${tnved}`, fetcher)
+  const { data, error, isLoading } = useSWR(`/api/results?year=${year}&tnved=${tnved}&size=${size}`, fetcher)
 
   if (!session) {
     return (
       <Layout>
         <main className="container mx-auto mb-10">
-          <div className="shadow bg-white rounded p-4 flex gap-8 flex-nowrap font-bold text-gray-600">
-            Вам необходимо войти в систему.
+          <div className="shadow bg-white rounded p-4 font-bold text-gray-600">
+            Вам необходимо войти в систему. Используйте демо-данные:{' '}
+            <span className="text-gray-500">test@test.ru \ test123</span>
           </div>
         </main>
       </Layout>
@@ -57,6 +60,25 @@ const MainPage: React.FC<Props> = (props) => {
               <option>2021</option>
               <option>2022</option>
             </select>
+            <select
+              value={size}
+              onChange={(e) => {
+                setSize(e.target.value)
+              }}
+              className="py-2 px-4 bg-white w-60 border rounded"
+            >
+              <option>100</option>
+              <option>200</option>
+              <option>300</option>
+              <option>400</option>
+              <option>500</option>
+              <option>1000</option>
+            </select>
+            {data && (
+              <CSVLink data={data} filename={"tnved_analytics.csv"} target="_blank" separator={';'} className="px-4 py-2 bg-green-500 text-white rounded uppercase font-bold">
+                Скачать таблицу
+              </CSVLink>
+            )}
             <a title="выводятся первые 200 ТН ВЭДов">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
