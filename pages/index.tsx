@@ -35,7 +35,7 @@ const MainPage: React.FC<Props> = (props) => {
     <Layout>
       <div className="page">
         <main className="container mx-auto mb-10">
-          <h1 className="text-2xl font-bold mb-8">Рейтинг ТНВЭД для замещения:</h1>
+          <h1 className="text-2xl font-bold mb-8">Рейтинг ТНВЭД:</h1>
           <div className="pb-8 flex gap-4 items-center">
             <input
               value={tnved}
